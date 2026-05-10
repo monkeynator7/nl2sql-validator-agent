@@ -1,0 +1,20 @@
+{
+    "rules": [
+        {
+            "name": "sales_net_never_negative",
+            "description": "Las ventas netas nunca pueden ser negativas",
+            "condition": "sales_net < 0"
+        },
+        {
+            "name": "discount_never_greater_than_100",
+            "description": "Los descuentos no pueden superar el 100%",
+            "condition": "discount > 100"
+        }
+        ,
+        {
+            "name": "transaction_date_not_in_future",
+            "description": "Las fechas de transacción no pueden estar en el futuro",
+            "condition": "transaction_date > @today"
+        }
+    ]
+}

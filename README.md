@@ -1,33 +1,36 @@
-# QAgent Core Orchestrator
+# NexaQuery Core Orchestrator
 
-Bienvenido al equipo de QAgent SpA. Este es el motor principal de nuestro copiloto de decisiones. El servicio se encarga de transformar lenguaje natural en consultas SQL precisas y devolver resultados accionables.
+Welcome to the NexaQuery Labs team. This is the core engine of our decision copilot. The service turns natural language into precise SQL queries and returns actionable results.
 
-## Estructura del Proyecto
+## Project Structure
 
-- `app/agents/`: Definición de agentes especializados (Query, Validator, etc.).
-- `app/utils/dispatcher.py`: Registro y despacho de herramientas para el sistema multi-agente.
-- `app/services/llm.py`: Cliente unificado para modelos de lenguaje.
-- `docs/`: Documentación técnica y especificaciones de arquitectura.
+- `app/agents/`: Specialized agents (Query, Validator, etc.).
+- `app/utils/dispatcher.py`: Tool registry and dispatch for the multi-agent system.
+- `app/services/llm.py`: Unified client for language models.
+- `docs/`: Technical documentation and architecture specs.
 
-## Configuración Rápida
+## Quick Setup
 
-1. Clona el repositorio y crea un entorno virtual.
-2. Copia el archivo de variables de entorno:
-   bash
-   cp .env.example .env
-   
-3. Instala las dependencias y corre el servidor en modo desarrollo:
-   bash
-   pip install -r requirements.txt
-   fastapi dev app/main.py
-   
+1. Clone the repository and create a virtual environment.
+2. Copy the environment file:
 
-## Tu Equipo
+```bash
+cp .env.example .env
+```
+
+3. Install dependencies and run the server in development mode:
+
+```bash
+pip install -r requirements.txt
+fastapi dev app/main.py
+```
+
+## Your Team
 
 - **Matías Oyarzún** — Tech Lead & Engineering Manager
 - **Diego Méndez** — Senior Backend & AI Engineer
-- **Valentina Rojas** — Data Engineer Senior
+- **Valentina Rojas** — Senior Data Engineer
 
-## Flujo de Trabajo
+## Workflow
 
-Revisa el archivo `docs/issues/402-validator-agent.md` para detalles sobre tu primera tarea. Una vez que tengas una solución, abre un Pull Request para que Diego o Valentina lo revisen.
+Review `docs/issues/402-validator-agent.md` for details on your first task. Once you have a solution, open a Pull Request for Diego or Valentina to review.

@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for the QAgent test suite."""
+"""Shared pytest fixtures for the NexaQuery test suite."""
 
 import pandas as pd
 import pytest

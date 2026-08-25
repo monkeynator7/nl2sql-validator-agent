@@ -1,36 +1,51 @@
 # NexaQuery Core Orchestrator
 
-Welcome to the NexaQuery Labs team. This is the core engine of our decision copilot. The service turns natural language into precise SQL queries and returns actionable results.
+Multi-agent decision copilot that turns natural-language questions into SQL against a PostgreSQL warehouse, then validates result sets against business rules before they reach the UI.
 
-## Project Structure
+Built as a FastAPI backend with an orchestrator that chains specialized agents, declarative rule evaluation, and an optional LLM assist — with explicit latency budgets and fail-open behavior so validation never takes down the main request.
 
-- `app/agents/`: Specialized agents (Query, Validator, etc.).
-- `app/utils/dispatcher.py`: Tool registry and dispatch for the multi-agent system.
-- `app/services/llm.py`: Unified client for language models.
-- `docs/`: Technical documentation and architecture specs.
+## What it demonstrates
 
-## Quick Setup
+- **Multi-agent orchestration** — `Orchestrator` runs Query → Validator; validators register via a dispatcher so new checks plug in without rewriting the pipeline.
+- **NL → SQL query path** — `QueryAgent` is the slot for LLM-backed SQL generation and warehouse execution (stubbed in this repo so the validation layer can be developed and tested independently).
+- **Declarative business-rule validation** — JSON rules evaluated with pandas (`eval`), including safe coercion of legacy string/date columns and skip-on-missing-columns behavior.
+- **Optional LLM validation** — Anthropic pass for domain issues that are hard to express as JSON; bounded by `asyncio.wait_for` (~2s), skipped when rules already fail or the API key is missing; timeouts/errors log and continue (fail-open).
+- **Hard-rules AI extension** — separate module for cross-column / “smell test” checks without bloating the core validator.
+- **Production-minded defaults** — structured validation payload (`validation`, `validation_ok`), logging, env-driven config, pytest coverage for the validator path.
 
-1. Clone the repository and create a virtual environment.
-2. Copy the environment file:
+## Pipeline
 
-```bash
-cp .env.example .env
+```
+User query
+    → QueryAgent (NL → SQL → DataFrame)
+    → Dispatcher.run_validators (business rules ± LLM)
+    → Response { data, metadata, validation, validation_ok }
 ```
 
-3. Install dependencies and run the server in development mode:
+Rules live in `docs/rules-draft.json` (e.g. net sales ≥ 0, discount ≤ 100%, no future transaction dates). Path and LLM timeout are configurable via `.env`.
+
+## Stack
+
+Python 3.11 · FastAPI · pandas · Anthropic · SQLAlchemy / Alembic · PostgreSQL · pytest
+
+## Project layout
+
+- `app/agents/` — Orchestrator, QueryAgent, business-rules validator, hard-rules AI helper
+- `app/utils/dispatcher.py` — Validator registry and fan-out
+- `app/services/llm.py` — Anthropic client wrapper
+- `docs/` — Specs, issue brief, draft rules
+
+## Quick setup
 
 ```bash
+python -m venv venv && source venv/bin/activate
+cp .env.example .env
 pip install -r requirements.txt
 fastapi dev app/main.py
 ```
 
-## Your Team
+```bash
+pytest
+```
 
-- **Matías Oyarzún** — Tech Lead & Engineering Manager
-- **Diego Méndez** — Senior Backend & AI Engineer
-- **Valentina Rojas** — Senior Data Engineer
-
-## Workflow
-
-Review `docs/issues/402-validator-agent.md` for details on your first task. Once you have a solution, open a Pull Request for Diego or Valentina to review.
+Point `DATABASE_URL` and `ANTHROPIC_API_KEY` in `.env` when exercising the real warehouse / LLM paths. Validator behavior is controlled by `BUSINESS_RULES_PATH`, `VALIDATOR_LLM_TIMEOUT_SEC`, and `VALIDATOR_MAX_SAMPLE_ROWS`.
